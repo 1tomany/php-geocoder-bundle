@@ -1,6 +1,6 @@
 <?php
 
-namespace OneToMany\Bundle\GeocoderBundle;
+namespace OneToMany\GeocoderBundle;
 
 use OneToMany\Geocoder\Bridge\Google\GoogleProvider;
 use OneToMany\Geocoder\Bridge\Mock\MockProvider;
