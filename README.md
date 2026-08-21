@@ -22,21 +22,29 @@ onetomany_geocoder:
     google:
         api_key: "%env(GOOGLE_API_KEY)%"
         api_version: v4
+
+    mock: false
 ```
 
-The transport uses Symfony's `http_client` service by default, so the `transport` block can normally be omitted. The bundle registers its provider-specific query normalizers with Symfony's `serializer` service and injects that serializer into the transport.
+The transport uses Symfony's `http_client` service by default, so the `transport` block can normally be omitted. The bundle injects Symfony's `serializer` service into the transport.
 
-Provider blocks are optional. If a provider block is omitted, that provider is not registered with the `OneToMany\Geocoder\GeocoderClient` facade.
+The Google block is optional. If it is omitted, Google is not registered with the `OneToMany\Geocoder\GeocoderClient`. The Mock provider is disabled by default and can be enabled in the test environment with the following configuration:
+
+```yaml
+# config/packages/test/onetomany_geocoder.yaml
+onetomany_geocoder:
+    mock: true
+```
 
 ## Usage
 
-Inject the `OneToMany\Geocoder\Contract\GeocoderClientInterface` facade and use its resources:
+Inject the `OneToMany\Geocoder\Contract\GeocoderClientInterface` client and use its resources:
 
 ```php
 use OneToMany\Geocoder\Contract\GeocoderClientInterface;
+use OneToMany\Geocoder\Resource\Geocode;
+use OneToMany\Geocoder\Resource\Reverse;
 use OneToMany\Geocoder\Vendor;
-
-use function sprintf;
 
 final readonly class GeocodeAddress
 {

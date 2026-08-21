@@ -2,14 +2,28 @@
 
 namespace OneToMany\Bundle\GeocoderBundle;
 
+use OneToMany\Geocoder\Bridge\Google\GoogleProvider;
+use OneToMany\Geocoder\Bridge\Mock\MockProvider;
+use OneToMany\Geocoder\Bridge\Transport;
+use OneToMany\Geocoder\Contract\GeocoderClientInterface;
+use OneToMany\Geocoder\GeocoderClient;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
+
 class GeocoderBundle extends AbstractBundle
 {
     protected string $extensionAlias = 'onetomany_geocoder';
+
+    private const string GEOCODER_CLIENT_SERVICE = '.onetomany_geocoder.geocoder_client';
+    private const string GOOGLE_PROVIDER_SERVICE = '.onetomany_geocoder.provider.google';
+    private const string MOCK_PROVIDER_SERVICE = '.onetomany_geocoder.provider.mock';
+    private const string PROVIDER_TAG = 'onetomany_geocoder.provider';
+    private const string TRANSPORT_SERVICE = '.onetomany_geocoder.transport';
 
     /**
      * @see Symfony\Component\Config\Definition\ConfigurableInterface
@@ -44,6 +58,9 @@ class GeocoderBundle extends AbstractBundle
                             ->end()
                         ->end()
                     ->end()
+                    ->booleanNode('mock')
+                        ->defaultFalse()
+                    ->end()
                 ->end()
             ->end();
     }
@@ -59,6 +76,7 @@ class GeocoderBundle extends AbstractBundle
      *     api_key: non-empty-string,
      *     api_version: non-empty-string,
      *   },
+     *   mock: bool,
      * } $config
      */
     #[\Override]
@@ -68,5 +86,33 @@ class GeocoderBundle extends AbstractBundle
         ContainerBuilder $builder,
     ): void {
         $services = $container->services();
+
+        $services
+            ->set(self::TRANSPORT_SERVICE, Transport::class)
+                ->arg('$httpClient', service($config['transport']['http_client']))
+                ->arg('$serializer', service('serializer'))
+
+            ->set(self::GEOCODER_CLIENT_SERVICE, GeocoderClient::class)
+                ->arg('$providers', tagged_iterator(self::PROVIDER_TAG))
+                ->alias(GeocoderClient::class, service(self::GEOCODER_CLIENT_SERVICE))
+                ->alias(GeocoderClientInterface::class, service(self::GEOCODER_CLIENT_SERVICE))
+        ;
+
+        if (isset($config['google'])) {
+            $services
+                ->set(self::GOOGLE_PROVIDER_SERVICE, GoogleProvider::class)
+                    ->arg('$transport', service(self::TRANSPORT_SERVICE))
+                    ->arg('$apiKey', $config['google']['api_key'])
+                    ->arg('$apiVersion', $config['google']['api_version'])
+                    ->tag(self::PROVIDER_TAG)
+            ;
+        }
+
+        if ($config['mock']) {
+            $services
+                ->set(self::MOCK_PROVIDER_SERVICE, MockProvider::class)
+                    ->tag(self::PROVIDER_TAG)
+            ;
+        }
     }
 }
