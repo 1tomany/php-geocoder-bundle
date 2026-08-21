@@ -1,0 +1,49 @@
+{
+    "name": "1tomany/php-geocoder-bundle",
+    "description": "Symfony bundle that provides bindings for the 1tomany/php-geocoder package",
+    "license": "MIT",
+    "type": "symfony-bundle",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.5",
+        "symfony/config": "^7.2|^8.0|^8.1",
+        "symfony/dependency-injection": "^7.2|^8.0|^8.1",
+        "symfony/framework-bundle": "^7.2|^8.0|^8.1",
+        "symfony/http-kernel": "^7.2|^8.0|^8.1"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.93",
+        "phpstan/phpstan": "^2.1.55",
+        "phpunit/phpunit": "^13.1.11"
+    },
+    "autoload": {
+        "psr-4": {
+            "OneToMany\\Bundle\\GeocoderBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OneToMany\\Bundle\\GeocoderBundle\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "fix": "php-cs-fixer fix",
+        "stan": "phpstan",
+        "test": "phpunit",
+        "flat": [
+            "@fix",
+            "@stan",
+            "@test"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Vic Cherubini",
+            "email": "vcherubini@gmail.com"
+        }
+    ],
+    "config": {
+        "sort-packages": true
+    }
+}
