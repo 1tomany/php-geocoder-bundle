@@ -28,12 +28,12 @@ onetomany_geocoder:
 
 The transport uses Symfony's `http_client` service by default, so the `transport` block can normally be omitted. The bundle injects Symfony's `serializer` service into the transport.
 
-The Google block is optional. If it is omitted, Google is not registered with the `OneToMany\Geocoder\GeocoderClient`. The Mock provider is disabled by default and can be enabled in the test environment with the following configuration:
+The `google` block is optional. If it is omitted, the Google provider is not registered with the `GeocoderClient`. The Mock provider is disabled by default and can be enabled in the test environment with the following configuration:
 
 ```yaml
-# config/packages/test/onetomany_geocoder.yaml
-onetomany_geocoder:
-    mock: true
+when@test:
+    onetomany_geocoder:
+        mock: true
 ```
 
 ## Usage
