@@ -26,7 +26,7 @@ onetomany_geocoder:
     mock: false
 ```
 
-The transport uses Symfony's `http_client` service by default, so the `transport` block can normally be omitted. The bundle injects Symfony's `serializer` service into the transport.
+The transport uses Symfony's `http_client` service by default, so the `transport` block can normally be omitted. The bundle injects Symfony's default `serializer` service into the transport.
 
 The `google` block is optional. If it is omitted, the Google provider is not registered with the `GeocoderClient`. The Mock provider is disabled by default and can be enabled in the test environment with the following configuration:
 
@@ -38,9 +38,11 @@ when@test:
 
 ## Usage
 
-Inject the `OneToMany\Geocoder\Contract\GeocoderClientInterface` client and use its resources:
+Inject the `OneToMany\Geocoder\Contract\GeocoderClientInterface` object and use its resources:
 
 ```php
+<?php
+
 use OneToMany\Geocoder\Contract\GeocoderClientInterface;
 use OneToMany\Geocoder\Resource\Geocode;
 use OneToMany\Geocoder\Resource\Reverse;
@@ -53,26 +55,16 @@ final readonly class GeocodeAddress
     ) {
     }
 
-    public function __invoke(string $path): void
+    public function __invoke(): void
     {
         $response = $this->geocoderClient->geocode(
             Vendor::Google,
-            new Geocode(
-                street: '123 Main Street',
-                unit: null,
-                city: 'Dallas',
-                zip: '75205',
-                state: 'TX',
-                country: null,
-            ),
+            new Geocode('123', 'Main Street', null, 'Dallas', '75205', 'TX', 'US'),
         );
 
         $response = $this->geocoderClient->reverse(
             Vendor::Google,
-            new Reverse(
-                latitude: 32.10391494,
-                longitude: -96.3931030,
-            ),
+            new Reverse('32.10391494', '-96.3931030'),
         );
     }
 }

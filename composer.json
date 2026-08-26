@@ -7,7 +7,7 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.5",
-        "1tomany/php-geocoder": "^0.0.1"
+        "1tomany/php-geocoder": "^0.0.2"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.93",
