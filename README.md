@@ -41,6 +41,8 @@ when@test:
 Inject the `OneToMany\Geocoder\Contract\GeocoderClientInterface` client and use its resources:
 
 ```php
+<?php
+
 use OneToMany\Geocoder\Contract\GeocoderClientInterface;
 use OneToMany\Geocoder\Resource\Geocode;
 use OneToMany\Geocoder\Resource\Reverse;
@@ -57,22 +59,12 @@ final readonly class GeocodeAddress
     {
         $response = $this->geocoderClient->geocode(
             Vendor::Google,
-            new Geocode(
-                street: '123 Main Street',
-                unit: null,
-                city: 'Dallas',
-                zip: '75205',
-                state: 'TX',
-                country: null,
-            ),
+            new Geocode('123', 'Main Street', null, 'Dallas', '75205', 'TX', 'US'),
         );
 
         $response = $this->geocoderClient->reverse(
             Vendor::Google,
-            new Reverse(
-                latitude: 32.10391494,
-                longitude: -96.3931030,
-            ),
+            new Reverse('32.10391494', '-96.3931030'),
         );
     }
 }
