@@ -7,6 +7,7 @@ use OneToMany\Geocoder\Bridge\Mock\MockProvider;
 use OneToMany\Geocoder\Bridge\Transport;
 use OneToMany\Geocoder\Contract\GeocodingClientInterface;
 use OneToMany\Geocoder\GeocodingClient;
+use OneToMany\Geocoder\Validator\GeocodingVendorNameValidator;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -88,6 +89,9 @@ class GeocoderBundle extends AbstractBundle
         $services = $container->services();
 
         $services
+            ->set(GeocodingVendorNameValidator::class)
+                ->tag('validator.constraint_validator')
+
             ->set(self::TRANSPORT_SERVICE, Transport::class)
                 ->arg('$httpClient', service($config['transport']['http_client']))
                 ->arg('$serializer', service('serializer'))
