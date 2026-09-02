@@ -5,8 +5,9 @@ namespace OneToMany\GeocoderBundle;
 use OneToMany\Geocoder\Bridge\Google\GoogleProvider;
 use OneToMany\Geocoder\Bridge\Mock\MockProvider;
 use OneToMany\Geocoder\Bridge\Transport;
-use OneToMany\Geocoder\Contract\GeocoderClientInterface;
-use OneToMany\Geocoder\GeocoderClient;
+use OneToMany\Geocoder\Contract\GeocodingClientInterface;
+use OneToMany\Geocoder\GeocodingClient;
+use OneToMany\Geocoder\Validator\GeocodingVendorNameValidator;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -19,7 +20,7 @@ class GeocoderBundle extends AbstractBundle
 {
     protected string $extensionAlias = 'onetomany_geocoder';
 
-    private const string GEOCODER_CLIENT_SERVICE = '.onetomany_geocoder.geocoder_client';
+    private const string GEOCODING_CLIENT_SERVICE = '.onetomany_geocoder.geocoding_client';
     private const string GOOGLE_PROVIDER_SERVICE = '.onetomany_geocoder.provider.google';
     private const string MOCK_PROVIDER_SERVICE = '.onetomany_geocoder.provider.mock';
     private const string PROVIDER_TAG = 'onetomany_geocoder.provider';
@@ -88,14 +89,17 @@ class GeocoderBundle extends AbstractBundle
         $services = $container->services();
 
         $services
+            ->set(GeocodingVendorNameValidator::class)
+                ->tag('validator.constraint_validator')
+
             ->set(self::TRANSPORT_SERVICE, Transport::class)
                 ->arg('$httpClient', service($config['transport']['http_client']))
                 ->arg('$serializer', service('serializer'))
 
-            ->set(self::GEOCODER_CLIENT_SERVICE, GeocoderClient::class)
+            ->set(self::GEOCODING_CLIENT_SERVICE, GeocodingClient::class)
                 ->arg('$providers', tagged_iterator(self::PROVIDER_TAG))
-                ->alias(GeocoderClient::class, service(self::GEOCODER_CLIENT_SERVICE))
-                ->alias(GeocoderClientInterface::class, service(self::GEOCODER_CLIENT_SERVICE))
+                ->alias(GeocodingClient::class, service(self::GEOCODING_CLIENT_SERVICE))
+                ->alias(GeocodingClientInterface::class, service(self::GEOCODING_CLIENT_SERVICE))
         ;
 
         if (isset($config['google'])) {

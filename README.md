@@ -43,28 +43,39 @@ Inject the `OneToMany\Geocoder\Contract\GeocoderClientInterface` object and use 
 ```php
 <?php
 
-use OneToMany\Geocoder\Contract\GeocoderClientInterface;
-use OneToMany\Geocoder\Resource\Geocode;
-use OneToMany\Geocoder\Resource\Reverse;
-use OneToMany\Geocoder\Vendor;
+use OneToMany\Geocoder\Contract\GeocodingClientInterface;
+use OneToMany\Geocoder\GeocodingVendor;
+use OneToMany\Geocoder\Resource\ForwardGeocode;
+use OneToMany\Geocoder\Resource\ReverseGeocode;
 
 final readonly class GeocodeAddress
 {
     public function __construct(
-        private GeocoderClientInterface $geocoderClient,
+        private GeocodingClientInterface $client,
     ) {
     }
 
     public function __invoke(): void
     {
-        $response = $this->geocoderClient->geocode(
-            Vendor::Google,
-            new Geocode('123', 'Main Street', null, 'Dallas', '75205', 'TX', 'US'),
+        $response = $this->client->forward(
+            GeocodingVendor::Google,
+            new ForwardGeocode(
+                '123',
+                'Main Street',
+                null,
+                'Dallas',
+                '75205',
+                'TX',
+                'US',
+            ),
         );
 
-        $response = $this->geocoderClient->reverse(
-            Vendor::Google,
-            new Reverse('32.10391494', '-96.3931030'),
+        $response = $this->client->reverse(
+            GeocodingVendor::Google,
+            new ReverseGeocode(
+                '32.10391494',
+                '-96.3931030',
+            ),
         );
     }
 }
